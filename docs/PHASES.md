@@ -34,6 +34,7 @@ A rough implementation roadmap that balances fast demo value with learning miles
 - Plug emotion detection into the live feed, convert outputs into the same vector space as `memes_index.json`.
 - Compute cosine similarity to find the top match; display the meme image in the second pane.
 - Add the "No meme matched yet" guard for low-confidence frames.
+- ✅ *Initial success (2025-11-08): smoothing window added to calm meme flipping; next up is gesture-aware filtering once tools are ready.*
 - ✅ *Initial success (2025-11-08): live test felt great even without gesture gating; next improvements are gesture-aware filtering and light temporal smoothing to reduce per-frame flipping.*
 
 ## Phase 4: Gesture + Scoring Tweaks (Optional)

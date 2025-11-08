@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List, Optional, Sequence, Tuple
@@ -101,6 +102,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=5,
         help="Run FER on every Nth frame to save CPU (default: 5).",
+    )
+    parser.add_argument(
+        "--smoothing-window",
+        type=int,
+        default=5,
+        help="Average this many recent emotion vectors before matching (default: 5).",
     )
     parser.add_argument(
         "--mtcnn",
@@ -325,6 +332,14 @@ def find_best_match(face_vec: np.ndarray, memes: Sequence[MemeEntry]) -> Tuple[O
     return best_entry, best_score
 
 
+def _smoothed_vector(buffer: Sequence[np.ndarray]) -> Optional[np.ndarray]:
+    if not buffer:
+        return None
+    stacked = np.stack(buffer)
+    mean_vec = stacked.mean(axis=0)
+    return _normalize_vector(mean_vec)
+
+
 def run_viewer(args: argparse.Namespace) -> int:
     cap = cv2.VideoCapture(args.camera_index, cv2.CAP_DSHOW)
     if not cap.isOpened():
@@ -345,6 +360,8 @@ def run_viewer(args: argparse.Namespace) -> int:
     meme_entries = load_meme_entries(args.index_file, args.memes_dir, panel_width, panel_height)
     detector = FER(mtcnn=args.mtcnn)
     analyze_interval = max(1, args.analyze_interval)
+    smoothing_window = max(1, args.smoothing_window)
+    vector_buffer: deque[np.ndarray] = deque(maxlen=smoothing_window)
 
     cv2.namedWindow(WINDOW_TITLE, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(WINDOW_TITLE, window_width, panel_height)
@@ -370,10 +387,17 @@ def run_viewer(args: argparse.Namespace) -> int:
             if meme_entries and frame_counter % analyze_interval == 0:
                 vec = detect_emotion_vector(detector, frame)
                 if vec is None:
+                    vector_buffer.clear()
                     active_panel = placeholder_panel
                     active_label = None
                 else:
-                    best_entry, score = find_best_match(vec, meme_entries)
+                    vector_buffer.append(vec)
+                    smooth_vec = _smoothed_vector(vector_buffer)
+                    if smooth_vec is None:
+                        active_panel = placeholder_panel
+                        active_label = None
+                        continue
+                    best_entry, score = find_best_match(smooth_vec, meme_entries)
                     if best_entry and score >= args.similarity_threshold:
                         active_panel = best_entry.panel
                         active_label = f"{best_entry.name} ({score:.2f})"

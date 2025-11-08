@@ -62,6 +62,7 @@ Then run `python index_memes.py --tags-file docs/manual_tags.json --overwrite`.
 | `--memes-dir PATH` | Where to load the meme images referenced in the index (default: `memes/`). |
 | `--similarity-threshold 0.35` | Minimum cosine score (0–1). Raise it if you want stricter matches. |
 | `--analyze-interval 5` | Run FER on every _N_ frames to save CPU. Set to 1 for maximum responsiveness. |
+| `--smoothing-window 5` | Average the last _N_ detected emotion vectors to reduce frame-to-frame twitchiness. |
 | `--mtcnn` | Enable FER's MTCNN detector (slower but more accurate; matches the CLI flag in `index_memes.py`). |
 | `--camera-index` | Pick a different webcam if your machine exposes multiple capture devices. |
 
@@ -75,7 +76,7 @@ python app.py --similarity-threshold 0.4 --analyze-interval 3
 
 1. **Index smoke test** – run the `index_memes.py` command above after adding new memes. The script logs skipped files and regenerates `memes_index.json`; inspect a few entries to confirm `emotion_vec` and `detected_face` look reasonable.
 2. **Viewer dry run** – execute `python app.py --help` to confirm dependencies import cleanly, then `python app.py` with your webcam covered/uncovered to watch the placeholder flip to a meme once a confident expression is detected.
-3. **Manual QA loop** – exaggerate an expression (e.g., yell or look skeptical) and verify that the overlay reports the intended meme. If it does not, tweak the corresponding `emotion_vec` entry manually or via `index_memes.py --mtcnn`.
+3. **Manual QA loop** – exaggerate an expression (e.g., yell or look skeptical) and verify that the overlay reports the intended meme. If it does not, tweak the corresponding `emotion_vec` entry manually or via `index_memes.py --mtcnn`. Adjust `--smoothing-window` up (more averaging) or down (snappier swaps) until the panel feels stable in motion.
 
 ## Learn by Building
 
