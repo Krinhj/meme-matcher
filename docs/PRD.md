@@ -51,9 +51,10 @@ You take a picture (or use your webcam) and the app detects your expression, the
 
 1. Add memes to the `/memes` folder.
 2. Run `index_memes.py`.
-   - Extracts facial emotion vectors from each meme.
-   - Detects gestures if visible.
-   - Stores results in `memes_index.json`.
+   - Extracts facial emotion vectors from each meme and stores normalized `emotion_vec` arrays for cosine scoring.
+   - Detects gestures if visible (manual tags or parent-folder inference).
+   - Stores results in `memes_index.json` with schema version, timestamps, and file metadata.
+   - Optional: merge manual tags/notes via JSON (`tags`, `gesture_tags`, `notes` fields) for memes with ambiguous expressions.
 
 ### Step 2: Desktop App Usage
 

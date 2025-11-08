@@ -1,0 +1,720 @@
+{
+  "schema_version": "1.0",
+  "created_at": "2025-11-08T01:02:26.438430+00:00",
+  "emotion_order": [
+    "angry",
+    "disgust",
+    "fear",
+    "happy",
+    "sad",
+    "surprise",
+    "neutral"
+  ],
+  "items": [
+    {
+      "file_name": "AbsoluteCinema.jpeg",
+      "relative_path": "AbsoluteCinema.jpeg",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.06,
+        "disgust": 0.0,
+        "fear": 0.01,
+        "happy": 0.0,
+        "sad": 0.19,
+        "surprise": 0.0,
+        "neutral": 0.73
+      },
+      "emotion_vec": [
+        0.06060606060606061,
+        0.0,
+        0.010101010101010102,
+        0.0,
+        0.19191919191919193,
+        0.0,
+        0.7373737373737373
+      ],
+      "dominant_emotion": {
+        "label": "neutral",
+        "score": 0.73
+      },
+      "bbox": [
+        425,
+        138,
+        243,
+        243
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": null,
+      "errors": null,
+      "file": {
+        "size": 80333,
+        "mtime": 1762543121,
+        "sha1": "d44dc4f13ecdcf506f2be40397cdac0700f42d5f"
+      },
+      "image_size": {
+        "width": 1080,
+        "height": 810
+      },
+      "indexed_at": "2025-11-08T01:02:26.145821+00:00"
+    },
+    {
+      "file_name": "ChefsKissClosedEyes.png",
+      "relative_path": "ChefsKissClosedEyes.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.02,
+        "disgust": 0.02,
+        "fear": 0.01,
+        "happy": 0.78,
+        "sad": 0.05,
+        "surprise": 0.04,
+        "neutral": 0.08
+      },
+      "emotion_vec": [
+        0.02,
+        0.02,
+        0.01,
+        0.78,
+        0.05,
+        0.04,
+        0.08
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.78
+      },
+      "bbox": [
+        0,
+        0,
+        460,
+        471
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual override: FER missed the stylized face.",
+      "errors": null,
+      "file": {
+        "size": 180190,
+        "mtime": 1762557068,
+        "sha1": "de8bc9ebf56c507804e1d811117fd3a25cefb204"
+      },
+      "image_size": {
+        "width": 460,
+        "height": 471
+      },
+      "indexed_at": "2025-11-08T01:02:26.156004+00:00"
+    },
+    {
+      "file_name": "HideThePainHarold.jpg",
+      "relative_path": "HideThePainHarold.jpg",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.03,
+        "disgust": 0.0,
+        "fear": 0.02,
+        "happy": 0.55,
+        "sad": 0.25,
+        "surprise": 0.02,
+        "neutral": 0.13
+      },
+      "emotion_vec": [
+        0.03,
+        0.0,
+        0.02,
+        0.55,
+        0.25,
+        0.02,
+        0.13
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.55
+      },
+      "bbox": [
+        0,
+        0,
+        2400,
+        1260
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual override: clear face but FER failed on lighting.",
+      "errors": null,
+      "file": {
+        "size": 280316,
+        "mtime": 1762556752,
+        "sha1": "2f791e0831aed68ad93f2cee33779adb83bc9407"
+      },
+      "image_size": {
+        "width": 2400,
+        "height": 1260
+      },
+      "indexed_at": "2025-11-08T01:02:26.234716+00:00"
+    },
+    {
+      "file_name": "LeoCheers.png",
+      "relative_path": "LeoCheers.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.02,
+        "disgust": 0.0,
+        "fear": 0.02,
+        "happy": 0.82,
+        "sad": 0.01,
+        "surprise": 0.05,
+        "neutral": 0.08
+      },
+      "emotion_vec": [
+        0.02,
+        0.0,
+        0.02,
+        0.82,
+        0.01,
+        0.05,
+        0.08
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.82
+      },
+      "bbox": [
+        174,
+        55,
+        114,
+        114
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: celebratory toast should skew happy.",
+      "errors": null,
+      "file": {
+        "size": 200300,
+        "mtime": 1762557115,
+        "sha1": "6ee049d87ee4955b282a1560f81a28211807b683"
+      },
+      "image_size": {
+        "width": 477,
+        "height": 320
+      },
+      "indexed_at": "2025-11-08T01:02:26.245518+00:00"
+    },
+    {
+      "file_name": "LeoPointing.png",
+      "relative_path": "LeoPointing.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.12,
+        "disgust": 0.0,
+        "fear": 0.08,
+        "happy": 0.3,
+        "sad": 0.05,
+        "surprise": 0.3,
+        "neutral": 0.15
+      },
+      "emotion_vec": [
+        0.12,
+        0.0,
+        0.08,
+        0.3,
+        0.05,
+        0.3,
+        0.15
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.3
+      },
+      "bbox": [
+        208,
+        29,
+        81,
+        81
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: pointing moment is excited/surprised.",
+      "errors": null,
+      "file": {
+        "size": 177317,
+        "mtime": 1762556914,
+        "sha1": "8cbbccec9c3495c2a21dca1431252785cb3d6648"
+      },
+      "image_size": {
+        "width": 446,
+        "height": 280
+      },
+      "indexed_at": "2025-11-08T01:02:26.252354+00:00"
+    },
+    {
+      "file_name": "MonkeyFingerInMouth.jpeg",
+      "relative_path": "MonkeyFingerInMouth.jpeg",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.05,
+        "disgust": 0.0,
+        "fear": 0.1,
+        "happy": 0.25,
+        "sad": 0.15,
+        "surprise": 0.05,
+        "neutral": 0.4
+      },
+      "emotion_vec": [
+        0.05,
+        0.0,
+        0.1,
+        0.25,
+        0.15,
+        0.05,
+        0.4
+      ],
+      "dominant_emotion": {
+        "label": "neutral",
+        "score": 0.4
+      },
+      "bbox": [
+        66,
+        505,
+        64,
+        64
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: contemplative monkey leans neutral.",
+      "errors": null,
+      "file": {
+        "size": 212836,
+        "mtime": 1762543572,
+        "sha1": "6cd67de6c4ffc445336b8a610cf19e0be4e1afa6"
+      },
+      "image_size": {
+        "width": 1803,
+        "height": 1200
+      },
+      "indexed_at": "2025-11-08T01:02:26.306481+00:00"
+    },
+    {
+      "file_name": "MonkeyIdea.jpg",
+      "relative_path": "MonkeyIdea.jpg",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.03,
+        "disgust": 0.0,
+        "fear": 0.0,
+        "happy": 0.84,
+        "sad": 0.05,
+        "surprise": 0.0,
+        "neutral": 0.09
+      },
+      "emotion_vec": [
+        0.0297029702970297,
+        0.0,
+        0.0,
+        0.8316831683168316,
+        0.04950495049504951,
+        0.0,
+        0.0891089108910891
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.84
+      },
+      "bbox": [
+        98,
+        29,
+        93,
+        93
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": null,
+      "errors": null,
+      "file": {
+        "size": 5719,
+        "mtime": 1762543587,
+        "sha1": "d7674c0415e5ea1db60fc209827d502a10648526"
+      },
+      "image_size": {
+        "width": 249,
+        "height": 202
+      },
+      "indexed_at": "2025-11-08T01:02:26.311679+00:00"
+    },
+    {
+      "file_name": "MonkeySideEye.png",
+      "relative_path": "MonkeySideEye.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.05,
+        "disgust": 0.0,
+        "fear": 0.25,
+        "happy": 0.05,
+        "sad": 0.1,
+        "surprise": 0.1,
+        "neutral": 0.45
+      },
+      "emotion_vec": [
+        0.05,
+        0.0,
+        0.25,
+        0.05,
+        0.1,
+        0.1,
+        0.45
+      ],
+      "dominant_emotion": {
+        "label": "neutral",
+        "score": 0.45
+      },
+      "bbox": [
+        0,
+        0,
+        338,
+        267
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual override: puppet side-eye is skeptical/neutral.",
+      "errors": null,
+      "file": {
+        "size": 87960,
+        "mtime": 1762556679,
+        "sha1": "a85795db1c02a9df02d9c258e3c4d682c30a653b"
+      },
+      "image_size": {
+        "width": 338,
+        "height": 267
+      },
+      "indexed_at": "2025-11-08T01:02:26.316421+00:00"
+    },
+    {
+      "file_name": "ObamaDropMic.png",
+      "relative_path": "ObamaDropMic.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.1,
+        "disgust": 0.0,
+        "fear": 0.05,
+        "happy": 0.2,
+        "sad": 0.05,
+        "surprise": 0.1,
+        "neutral": 0.5
+      },
+      "emotion_vec": [
+        0.1,
+        0.0,
+        0.05,
+        0.2,
+        0.05,
+        0.1,
+        0.5
+      ],
+      "dominant_emotion": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "bbox": [
+        131,
+        49,
+        62,
+        62
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: cool/confident mic drop, mostly neutral.",
+      "errors": null,
+      "file": {
+        "size": 102557,
+        "mtime": 1762557032,
+        "sha1": "b4b08ad7cfd9baa93ecbab19edcd828255c24a02"
+      },
+      "image_size": {
+        "width": 396,
+        "height": 266
+      },
+      "indexed_at": "2025-11-08T01:02:26.322158+00:00"
+    },
+    {
+      "file_name": "OprahGetACar.png",
+      "relative_path": "OprahGetACar.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.03,
+        "disgust": 0.0,
+        "fear": 0.02,
+        "happy": 0.8,
+        "sad": 0.0,
+        "surprise": 0.12,
+        "neutral": 0.03
+      },
+      "emotion_vec": [
+        0.03,
+        0.0,
+        0.02,
+        0.8,
+        0.0,
+        0.12,
+        0.03
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.8
+      },
+      "bbox": [
+        192,
+        96,
+        77,
+        77
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: overjoyed Oprah energy.",
+      "errors": null,
+      "file": {
+        "size": 243141,
+        "mtime": 1762557162,
+        "sha1": "b75d0e28bb768b5fd242c0a3242cadb5745465b0"
+      },
+      "image_size": {
+        "width": 498,
+        "height": 417
+      },
+      "indexed_at": "2025-11-08T01:02:26.332212+00:00"
+    },
+    {
+      "file_name": "PointingAtSelf.png",
+      "relative_path": "PointingAtSelf.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.02,
+        "disgust": 0.0,
+        "fear": 0.21,
+        "happy": 0.0,
+        "sad": 0.03,
+        "surprise": 0.6,
+        "neutral": 0.14
+      },
+      "emotion_vec": [
+        0.02,
+        0.0,
+        0.21,
+        0.0,
+        0.03,
+        0.6,
+        0.14
+      ],
+      "dominant_emotion": {
+        "label": "surprise",
+        "score": 0.6
+      },
+      "bbox": [
+        170,
+        56,
+        107,
+        107
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": null,
+      "errors": null,
+      "file": {
+        "size": 74362,
+        "mtime": 1762556944,
+        "sha1": "556b41767af0fb3b51152deef0214b8d9b8b5f27"
+      },
+      "image_size": {
+        "width": 452,
+        "height": 310
+      },
+      "indexed_at": "2025-11-08T01:02:26.338104+00:00"
+    },
+    {
+      "file_name": "SmartMeme.jpeg",
+      "relative_path": "SmartMeme.jpeg",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.05,
+        "disgust": 0.0,
+        "fear": 0.03,
+        "happy": 0.6,
+        "sad": 0.02,
+        "surprise": 0.05,
+        "neutral": 0.25
+      },
+      "emotion_vec": [
+        0.05,
+        0.0,
+        0.03,
+        0.6,
+        0.02,
+        0.05,
+        0.25
+      ],
+      "dominant_emotion": {
+        "label": "happy",
+        "score": 0.6
+      },
+      "bbox": [
+        0,
+        0,
+        2000,
+        1334
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual override: Roll Safe smirk is confident/happy.",
+      "errors": null,
+      "file": {
+        "size": 153860,
+        "mtime": 1762543032,
+        "sha1": "4c4dd8dd3dbc993a68979f536c8484b2dac3d3e8"
+      },
+      "image_size": {
+        "width": 2000,
+        "height": 1334
+      },
+      "indexed_at": "2025-11-08T01:02:26.384119+00:00"
+    },
+    {
+      "file_name": "SquintMeme.jpg",
+      "relative_path": "SquintMeme.jpg",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.15,
+        "disgust": 0.0,
+        "fear": 0.1,
+        "happy": 0.05,
+        "sad": 0.1,
+        "surprise": 0.05,
+        "neutral": 0.55
+      },
+      "emotion_vec": [
+        0.15,
+        0.0,
+        0.1,
+        0.05,
+        0.1,
+        0.05,
+        0.55
+      ],
+      "dominant_emotion": {
+        "label": "neutral",
+        "score": 0.55
+      },
+      "bbox": [
+        369,
+        890,
+        222,
+        222
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: Futurama squint is skeptical/neutral.",
+      "errors": null,
+      "file": {
+        "size": 173562,
+        "mtime": 1762543058,
+        "sha1": "4f34b5d587abf075cf2baa0c69b21df6bca6cc7a"
+      },
+      "image_size": {
+        "width": 1600,
+        "height": 1600
+      },
+      "indexed_at": "2025-11-08T01:02:26.423860+00:00"
+    },
+    {
+      "file_name": "TheRockEyebrow.png",
+      "relative_path": "TheRockEyebrow.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.25,
+        "disgust": 0.0,
+        "fear": 0.1,
+        "happy": 0.05,
+        "sad": 0.05,
+        "surprise": 0.15,
+        "neutral": 0.4
+      },
+      "emotion_vec": [
+        0.25,
+        0.0,
+        0.1,
+        0.05,
+        0.05,
+        0.15,
+        0.4
+      ],
+      "dominant_emotion": {
+        "label": "neutral",
+        "score": 0.4
+      },
+      "bbox": [
+        0,
+        0,
+        310,
+        312
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual override: eyebrow raise = skeptical/confident.",
+      "errors": null,
+      "file": {
+        "size": 138418,
+        "mtime": 1762558298,
+        "sha1": "8bc7d1726f9e418e7f1440bebc6df46974d14374"
+      },
+      "image_size": {
+        "width": 310,
+        "height": 312
+      },
+      "indexed_at": "2025-11-08T01:02:26.432199+00:00"
+    },
+    {
+      "file_name": "YellingAtCat.png",
+      "relative_path": "YellingAtCat.png",
+      "detected_face": true,
+      "emotions": {
+        "angry": 0.55,
+        "disgust": 0.0,
+        "fear": 0.05,
+        "happy": 0.0,
+        "sad": 0.25,
+        "surprise": 0.1,
+        "neutral": 0.05
+      },
+      "emotion_vec": [
+        0.55,
+        0.0,
+        0.05,
+        0.0,
+        0.25,
+        0.1,
+        0.05
+      ],
+      "dominant_emotion": {
+        "label": "angry",
+        "score": 0.55
+      },
+      "bbox": [
+        58,
+        50,
+        82,
+        82
+      ],
+      "tags": [],
+      "gesture_tags": [],
+      "notes": "Manual tweak: meme is furious, not fearful.",
+      "errors": null,
+      "file": {
+        "size": 96532,
+        "mtime": 1762556797,
+        "sha1": "b041570fc89fc1dc7915a1c203eea966014746ef"
+      },
+      "image_size": {
+        "width": 225,
+        "height": 220
+      },
+      "indexed_at": "2025-11-08T01:02:26.438224+00:00"
+    }
+  ]
+}

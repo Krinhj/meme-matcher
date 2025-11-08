@@ -19,8 +19,40 @@ Meme Matcher is a local-first, split-screen desktop app that pairs your live web
    pip install -r requirements.txt
    ```
 2. **Prepare memes** - drop image files into the `memes/` folder (kept out of git for copyright/privacy).
-3. **Index memes** - run `python index_memes.py` to extract emotion/gesture vectors and write `memes_index.json`.
+3. **Index memes** - run:
+
+   ```bash
+   python index_memes.py \
+     --memes-dir memes \
+     --output memes_index.json \
+     --infer-gesture-from-dir \
+     --face-pick strongest \
+     --tags-file docs/manual_tags.json \
+     --overwrite
+   ```
+
+   Flags to know:
+   - `--mtcnn`: slower but more accurate FER detector.
+   - `--infer-gesture-from-dir`: uses parent folder names as gesture tags.
+   - `--face-pick {largest,strongest}`: how to choose the face when multiple exist (defaults to largest).
+   - `--tags-file`: optional manual metadata JSON (see below).
 4. **Go live** - run `python app.py` to open the split-screen viewer; closing the window stops the session.
+
+### Optional manual tags
+
+Create a JSON file (e.g., `docs/manual_tags.json`) to label memes with extra cues:
+
+```json
+{
+  "thinking_monkey.png": {
+    "tags": ["thinking", "classic"],
+    "gesture_tags": ["hand_on_chin"],
+    "notes": "Use when the user looks contemplative."
+  }
+}
+```
+
+Then run `python index_memes.py --tags-file docs/manual_tags.json --overwrite`.
 
 ## Learn by Building
 
@@ -33,3 +65,4 @@ Meme Matcher is a local-first, split-screen desktop app that pairs your live web
 
 - Product requirements and architecture: [`docs/PRD.md`](docs/PRD.md)
 - Phased step-by-step roadmap: [`docs/PHASES.md`](docs/PHASES.md)
+- Contributor/agent guide: [`AGENTS.md`](AGENTS.md)

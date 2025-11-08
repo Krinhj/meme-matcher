@@ -12,7 +12,7 @@ A rough implementation roadmap that balances fast demo value with learning miles
 
 ## Phase 1: Meme Indexing Script
 
-**Status:** Pending – planning next.
+**Status:** Completed — `index_memes.py` extracts FER emotions, optional gesture inference, manual tags, and structured JSON metadata.
 
 - Implement `index_memes.py` to iterate through `memes/`, detect faces/emotions, and store vectors in `memes_index.json`.
 - Add optional manual tags (JSON metadata) for memes with unclear expressions.
