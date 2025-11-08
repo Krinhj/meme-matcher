@@ -1,19 +1,32 @@
 """
 Meme Matcher live viewer.
 
-This script opens the default webcam, mirrors the feed for a natural selfie view,
-and shows a split-screen window with a placeholder meme panel. It is the baseline
-for plugging in emotion detection + meme matching logic.
+Opens the default webcam, mirrors the feed, and shows a split-screen window with
+either the best-matching meme (based on FER emotion vectors) or a friendly
+placeholder when confidence is too low.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable, List, Optional, Sequence, Tuple
 
 import cv2
 import numpy as np
+
+try:  # Prefer top-level import; some installs only expose fer.fer.FER
+    from fer import FER  # type: ignore
+except Exception:  # pragma: no cover
+    try:
+        from fer.fer import FER  # type: ignore
+    except Exception as exc:
+        raise RuntimeError(
+            "FER is required for the live matcher. Please `pip install fer` inside your venv."
+        ) from exc
 
 WINDOW_TITLE = "Meme Matcher"
 DEFAULT_WINDOW_WIDTH = 1920
@@ -21,6 +34,24 @@ DEFAULT_WINDOW_HEIGHT = 1080
 MIN_PANEL_WIDTH = 320
 MIN_PANEL_HEIGHT = 240
 PLACEHOLDER_TEXT = "No meme matched yet"
+MEME_BG_COLOR = (35, 35, 35)
+EMOTION_ORDER: Sequence[str] = (
+    "angry",
+    "disgust",
+    "fear",
+    "happy",
+    "sad",
+    "surprise",
+    "neutral",
+)
+
+
+@dataclass
+class MemeEntry:
+    name: str
+    panel: np.ndarray
+    vector: np.ndarray
+    norm_vector: np.ndarray
 
 
 def parse_args() -> argparse.Namespace:
@@ -52,6 +83,29 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("memes"),
         help="Path to the local meme folder (optional for future matching).",
+    )
+    parser.add_argument(
+        "--index-file",
+        type=Path,
+        default=Path("memes_index.json"),
+        help="JSON index produced by index_memes.py (default: memes_index.json).",
+    )
+    parser.add_argument(
+        "--similarity-threshold",
+        type=float,
+        default=0.35,
+        help="Minimum cosine similarity (0-1) required to show a meme.",
+    )
+    parser.add_argument(
+        "--analyze-interval",
+        type=int,
+        default=5,
+        help="Run FER on every Nth frame to save CPU (default: 5).",
+    )
+    parser.add_argument(
+        "--mtcnn",
+        action="store_true",
+        help="Use the slower but slightly more accurate MTCNN detector inside FER.",
     )
     return parser.parse_args()
 
@@ -111,6 +165,45 @@ def build_placeholder(width: int, height: int, text: str = PLACEHOLDER_TEXT) -> 
     return panel
 
 
+def _fit_image_to_panel(image: np.ndarray, width: int, height: int) -> np.ndarray:
+    """Resize an image with letterboxing so it fills the meme pane nicely."""
+    panel = np.zeros((height, width, 3), dtype=np.uint8)
+    panel[:] = MEME_BG_COLOR
+    if image is None or image.size == 0:
+        return panel
+    h, w = image.shape[:2]
+    scale = min(width / max(w, 1), height / max(h, 1))
+    new_w = max(1, int(w * scale))
+    new_h = max(1, int(h * scale))
+    resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_AREA)
+    x = (width - new_w) // 2
+    y = (height - new_h) // 2
+    panel[y : y + new_h, x : x + new_w] = resized
+    return panel
+
+
+def _caption_panel(panel: np.ndarray, caption: str) -> np.ndarray:
+    labeled = panel.copy()
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale = max(0.5, min(panel.shape[0], panel.shape[1]) / 900.0)
+    thickness = max(1, int(scale * 2))
+    text_size = cv2.getTextSize(caption, font, scale, thickness)[0]
+    margin = 16
+    x = max(margin, (panel.shape[1] - text_size[0]) // 2)
+    y = panel.shape[0] - margin
+    cv2.putText(
+        labeled,
+        caption,
+        (x, y),
+        font,
+        scale,
+        (255, 255, 255),
+        thickness,
+        cv2.LINE_AA,
+    )
+    return labeled
+
+
 def resize_frame(frame: np.ndarray, width: int, height: int) -> np.ndarray:
     """Resize a frame to fit the target panel dimensions."""
     return cv2.resize(frame, (width, height), interpolation=cv2.INTER_AREA)
@@ -138,6 +231,100 @@ def annotate_frame(frame: np.ndarray, message: str) -> None:
     )
 
 
+def _normalize_vector(values: Iterable[float]) -> Optional[np.ndarray]:
+    vec = np.array(list(values), dtype=np.float32)
+    if vec.size == 0:
+        return None
+    norm = np.linalg.norm(vec)
+    if not norm:
+        return None
+    return vec / norm
+
+
+def load_meme_entries(
+    index_path: Path, memes_dir: Path, panel_width: int, panel_height: int
+) -> List[MemeEntry]:
+    """Load meme vectors + pre-rendered panels from the JSON index."""
+    if not index_path.exists():
+        print(f"Warning: index file '{index_path}' not found. Showing placeholder only.", file=sys.stderr)
+        return []
+    if not memes_dir.exists():
+        print(f"Warning: memes directory '{memes_dir}' not found. Showing placeholder only.", file=sys.stderr)
+        return []
+
+    try:
+        data = json.loads(index_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        print(f"Error: could not parse {index_path}: {exc}", file=sys.stderr)
+        return []
+
+    emotion_count = len(EMOTION_ORDER)
+    entries: List[MemeEntry] = []
+    for item in data.get("items", []):
+        vec = np.array(item.get("emotion_vec", []), dtype=np.float32)
+        if vec.size != emotion_count:
+            continue
+        norm_vec = _normalize_vector(vec)
+        if norm_vec is None:
+            continue
+        rel_path = Path(item.get("relative_path", item.get("file_name", "")))
+        full_path = (memes_dir / rel_path).resolve()
+        image = cv2.imread(str(full_path), cv2.IMREAD_COLOR)
+        if image is None:
+            print(f"Warning: skipped {rel_path} (image missing or unreadable).", file=sys.stderr)
+            continue
+        panel = _fit_image_to_panel(image, panel_width, panel_height)
+        caption = item.get("file_name") or rel_path.name
+        panel = _caption_panel(panel, caption)
+        entries.append(MemeEntry(name=caption, panel=panel, vector=vec, norm_vector=norm_vec))
+
+    if not entries:
+        print("Warning: no valid meme entries found in the index.", file=sys.stderr)
+    else:
+        print(f"Loaded {len(entries)} meme entries from {index_path}.")
+    return entries
+
+
+def _select_face(detections: Sequence[dict]) -> Optional[dict]:
+    if not detections:
+        return None
+    return max(
+        detections,
+        key=lambda d: max(d.get("box", [0, 0, 0, 0])[2], 0) * max(d.get("box", [0, 0, 0, 0])[3], 0),
+    )
+
+
+def detect_emotion_vector(detector: FER, frame: np.ndarray) -> Optional[np.ndarray]:
+    """Run FER on the current frame and return a normalized emotion vector."""
+    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    try:
+        detections = detector.detect_emotions(rgb)
+    except Exception as exc:
+        print(f"FER failed on a frame: {exc}", file=sys.stderr)
+        return None
+
+    face = _select_face(detections)
+    if not face:
+        return None
+
+    emotions = face.get("emotions") or {}
+    vec = np.array([float(emotions.get(label, 0.0)) for label in EMOTION_ORDER], dtype=np.float32)
+    if not np.any(vec):
+        return None
+    return _normalize_vector(vec)
+
+
+def find_best_match(face_vec: np.ndarray, memes: Sequence[MemeEntry]) -> Tuple[Optional[MemeEntry], float]:
+    best_entry: Optional[MemeEntry] = None
+    best_score = -1.0
+    for entry in memes:
+        score = float(np.dot(face_vec, entry.norm_vector))
+        if score > best_score:
+            best_entry = entry
+            best_score = score
+    return best_entry, best_score
+
+
 def run_viewer(args: argparse.Namespace) -> int:
     cap = cv2.VideoCapture(args.camera_index, cv2.CAP_DSHOW)
     if not cap.isOpened():
@@ -155,8 +342,16 @@ def run_viewer(args: argparse.Namespace) -> int:
     panel_height = max(MIN_PANEL_HEIGHT, window_height)
 
     placeholder_panel = build_placeholder(panel_width, panel_height)
+    meme_entries = load_meme_entries(args.index_file, args.memes_dir, panel_width, panel_height)
+    detector = FER(mtcnn=args.mtcnn)
+    analyze_interval = max(1, args.analyze_interval)
+
     cv2.namedWindow(WINDOW_TITLE, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(WINDOW_TITLE, window_width, panel_height)
+
+    active_panel = placeholder_panel
+    active_label: Optional[str] = None
+    frame_counter = 0
 
     try:
         while True:
@@ -170,10 +365,26 @@ def run_viewer(args: argparse.Namespace) -> int:
 
             frame = cv2.flip(frame, 1)  # Mirror for selfie view
             resized_webcam = resize_frame(frame, panel_width, panel_height)
-            annotate_frame(resized_webcam, "Press 'Q' to quit")
+            frame_counter += 1
 
-            # Future work: replace placeholder_panel with matched meme frame when available.
-            composite = compose_split_screen(resized_webcam, placeholder_panel)
+            if meme_entries and frame_counter % analyze_interval == 0:
+                vec = detect_emotion_vector(detector, frame)
+                if vec is None:
+                    active_panel = placeholder_panel
+                    active_label = None
+                else:
+                    best_entry, score = find_best_match(vec, meme_entries)
+                    if best_entry and score >= args.similarity_threshold:
+                        active_panel = best_entry.panel
+                        active_label = f"{best_entry.name} ({score:.2f})"
+                    else:
+                        active_panel = placeholder_panel
+                        active_label = None
+
+            status = f"Match: {active_label}" if active_label else "Match: (none yet)"
+            annotate_frame(resized_webcam, f"{status} | Press 'Q' to quit")
+
+            composite = compose_split_screen(resized_webcam, active_panel)
             cv2.imshow(WINDOW_TITLE, composite)
 
             key = cv2.waitKey(1) & 0xFF

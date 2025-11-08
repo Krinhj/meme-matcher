@@ -58,13 +58,14 @@ You take a picture (or use your webcam) and the app detects your expression, the
 
 ### Step 2: Desktop App Usage
 
-1. Launch the desktop app: `python app.py`.
+1. Launch the desktop app: `python app.py` (no web interface; a window opens immediately).
 2. The webcam feed starts automatically (live-only, no upload mode).
-3. The app continuously detects facial emotion and gestures (if any).
-4. The window renders:
-   - Left/Top half: live webcam preview
-   - Right/Bottom half: current matched meme or a friendly "No meme matched yet" placeholder
-   - Optional overlay text such as emotion breakdown or match score
+3. The viewer loads `memes_index.json`, pre-renders each meme panel, and then runs FER on every _N_th frame (configurable via `--analyze-interval`).
+4. The emotion vector from the most confident face is compared against the cached meme vectors; if the best cosine score clears the `--similarity-threshold`, that meme is shown, otherwise the placeholder stays visible.
+5. The window renders:
+   - Left/Top half: live webcam preview with an overlay that states the latest meme match or “none yet”.
+   - Right/Bottom half: current matched meme or the friendly "No meme matched yet" placeholder.
+   - Optional overlay text such as emotion breakdown or match score (future enhancement).
 
 ### UI Layout
 
@@ -100,6 +101,8 @@ score = (
     + 0.05 * clip_similarity(user, meme)  # optional
 )
 ```
+
+> **Current implementation:** the live viewer already uses the emotion cosine term with a configurable threshold; gesture overlap and CLIP blending remain optional roadmap items for later phases.
 
 **Gesture Tags**
 
