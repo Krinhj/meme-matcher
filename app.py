@@ -29,6 +29,13 @@ except Exception:  # pragma: no cover
             "FER is required for the live matcher. Please `pip install fer` inside your venv."
         ) from exc
 
+try:
+    from gesture_detector import GestureDetector, gesture_overlap_score
+    GESTURES_AVAILABLE = True
+except ImportError:
+    GESTURES_AVAILABLE = False
+    print("Warning: gesture_detector module not found. Gesture detection disabled.", file=sys.stderr)
+
 WINDOW_TITLE = "Meme Matcher"
 DEFAULT_WINDOW_WIDTH = 1920
 DEFAULT_WINDOW_HEIGHT = 1080
@@ -53,6 +60,7 @@ class MemeEntry:
     panel: np.ndarray
     vector: np.ndarray
     norm_vector: np.ndarray
+    gesture_tags: List[str] = None  # Optional gesture tags from index
 
 
 def parse_args() -> argparse.Namespace:
@@ -113,6 +121,23 @@ def parse_args() -> argparse.Namespace:
         "--mtcnn",
         action="store_true",
         help="Use the slower but slightly more accurate MTCNN detector inside FER.",
+    )
+    parser.add_argument(
+        "--enable-gestures",
+        action="store_true",
+        help="Enable gesture detection (hands, body poses) to improve matching.",
+    )
+    parser.add_argument(
+        "--emotion-weight",
+        type=float,
+        default=0.7,
+        help="Weight for emotion similarity in combined score (default: 0.7).",
+    )
+    parser.add_argument(
+        "--gesture-weight",
+        type=float,
+        default=0.25,
+        help="Weight for gesture overlap in combined score (default: 0.25).",
     )
     return parser.parse_args()
 
@@ -283,7 +308,9 @@ def load_meme_entries(
         panel = _fit_image_to_panel(image, panel_width, panel_height)
         caption = item.get("file_name") or rel_path.name
         panel = _caption_panel(panel, caption)
-        entries.append(MemeEntry(name=caption, panel=panel, vector=vec, norm_vector=norm_vec))
+        # Extract gesture tags if available
+        gesture_tags = item.get("gesture_tags", []) or []
+        entries.append(MemeEntry(name=caption, panel=panel, vector=vec, norm_vector=norm_vec, gesture_tags=gesture_tags))
 
     if not entries:
         print("Warning: no valid meme entries found in the index.", file=sys.stderr)
@@ -321,14 +348,37 @@ def detect_emotion_vector(detector: FER, frame: np.ndarray) -> Optional[np.ndarr
     return _normalize_vector(vec)
 
 
-def find_best_match(face_vec: np.ndarray, memes: Sequence[MemeEntry]) -> Tuple[Optional[MemeEntry], float]:
+def find_best_match(
+    face_vec: np.ndarray,
+    memes: Sequence[MemeEntry],
+    user_gestures: Optional[List[str]] = None,
+    emotion_weight: float = 0.7,
+    gesture_weight: float = 0.25,
+) -> Tuple[Optional[MemeEntry], float]:
+    """Find the best matching meme using weighted emotion + gesture scores."""
     best_entry: Optional[MemeEntry] = None
     best_score = -1.0
+    
     for entry in memes:
-        score = float(np.dot(face_vec, entry.norm_vector))
-        if score > best_score:
+        # Emotion similarity (cosine)
+        emotion_score = float(np.dot(face_vec, entry.norm_vector))
+        
+        # Gesture overlap (if enabled)
+        gesture_score = 0.0
+        if user_gestures and entry.gesture_tags:
+            gesture_score = gesture_overlap_score(user_gestures, entry.gesture_tags)
+        
+        # Combined weighted score
+        # Note: remaining weight (0.05) reserved for future CLIP similarity
+        combined_score = (
+            emotion_weight * emotion_score +
+            gesture_weight * gesture_score
+        )
+        
+        if combined_score > best_score:
             best_entry = entry
-            best_score = score
+            best_score = combined_score
+    
     return best_entry, best_score
 
 
@@ -359,6 +409,16 @@ def run_viewer(args: argparse.Namespace) -> int:
     placeholder_panel = build_placeholder(panel_width, panel_height)
     meme_entries = load_meme_entries(args.index_file, args.memes_dir, panel_width, panel_height)
     detector = FER(mtcnn=args.mtcnn)
+    
+    # Initialize gesture detector if enabled
+    gesture_detector = None
+    if args.enable_gestures:
+        if not GESTURES_AVAILABLE:
+            print("Warning: --enable-gestures specified but gesture_detector not available.", file=sys.stderr)
+        else:
+            gesture_detector = GestureDetector()
+            print("Gesture detection enabled.")
+    
     analyze_interval = max(1, args.analyze_interval)
     smoothing_window = max(1, args.smoothing_window)
     vector_buffer: deque[np.ndarray] = deque(maxlen=smoothing_window)
@@ -368,6 +428,7 @@ def run_viewer(args: argparse.Namespace) -> int:
 
     active_panel = placeholder_panel
     active_label: Optional[str] = None
+    current_gestures: Optional[List[str]] = None
     frame_counter = 0
 
     try:
@@ -386,6 +447,14 @@ def run_viewer(args: argparse.Namespace) -> int:
 
             if meme_entries and frame_counter % analyze_interval == 0:
                 vec = detect_emotion_vector(detector, frame)
+                
+                # Detect gestures if enabled
+                if gesture_detector:
+                    gesture_result = gesture_detector.detect(frame)
+                    current_gestures = gesture_result.gesture_tags
+                else:
+                    current_gestures = None
+                
                 if vec is None:
                     vector_buffer.clear()
                     active_panel = placeholder_panel
@@ -397,10 +466,20 @@ def run_viewer(args: argparse.Namespace) -> int:
                         active_panel = placeholder_panel
                         active_label = None
                         continue
-                    best_entry, score = find_best_match(smooth_vec, meme_entries)
+                    
+                    # Find best match with gesture support
+                    best_entry, score = find_best_match(
+                        smooth_vec,
+                        meme_entries,
+                        user_gestures=current_gestures,
+                        emotion_weight=args.emotion_weight,
+                        gesture_weight=args.gesture_weight,
+                    )
+                    
                     if best_entry and score >= args.similarity_threshold:
                         active_panel = best_entry.panel
-                        active_label = f"{best_entry.name} ({score:.2f})"
+                        gesture_info = f" | {', '.join(current_gestures)}" if current_gestures and current_gestures != ['neutral'] else ""
+                        active_label = f"{best_entry.name} ({score:.2f}){gesture_info}"
                     else:
                         active_panel = placeholder_panel
                         active_label = None
@@ -416,6 +495,8 @@ def run_viewer(args: argparse.Namespace) -> int:
                 break
     finally:
         cap.release()
+        if gesture_detector:
+            gesture_detector.close()
         cv2.destroyAllWindows()
 
     return 0

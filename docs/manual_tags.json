@@ -1,0 +1,26 @@
+{
+    "TheRockEyebrow.png": {
+        "tags": [
+            "the_rock",
+            "eyebrow",
+            "suspicious",
+            "skeptical"
+        ],
+        "gesture_tags": [
+            "eyebrow_raise"
+        ],
+        "notes": "The Rock's signature eyebrow raise - use when user raises eyebrow skeptically."
+    },
+    "MonkeyFingerInMouth.jpeg": {
+        "tags": [
+            "monkey",
+            "thinking",
+            "contemplative",
+            "pondering"
+        ],
+        "gesture_tags": [
+            "thinking"
+        ],
+        "notes": "Monkey with finger in mouth - use when user puts finger near mouth/chin in thinking pose."
+    }
+}

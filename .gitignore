@@ -157,11 +157,15 @@ build/
 .coverage
 htmlcov/
 
-# Virtual environments
+# Virtual environments - catch all variations
 .venv/
+.venv*/
 venv/
+venv*/
 env/
 ENV/
+.env/
+*.venv/
 
 # Editor and OS cruft
 .vscode/

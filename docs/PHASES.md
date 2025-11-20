@@ -37,13 +37,17 @@ A rough implementation roadmap that balances fast demo value with learning miles
 - ✅ *Initial success (2025-11-08): smoothing window added to calm meme flipping; next up is gesture-aware filtering once tools are ready.*
 - ✅ *Initial success (2025-11-08): live test felt great even without gesture gating; next improvements are gesture-aware filtering and light temporal smoothing to reduce per-frame flipping.*
 
-## Phase 4: Gesture + Scoring Tweaks (Optional)
+## Phase 4: Gesture + Scoring Tweaks
 
-**Status:** Pending.
+**Status:** Completed – OpenCV-based gesture detection implemented with configurable weighted scoring (2025-11-20).
 
-- Layer in MediaPipe (once Py3.13 wheels land) or heuristic gesture tags and incorporate them into the weighted score (baseline: 0.7 emotion / 0.25 gesture / 0.05 CLIP).
-- Expose a simple config for adjusting weights or thresholds without editing code.
-- Experiment with temporal smoothing so quick glitches do not immediately swap the meme.
+- ✅ Implemented `gesture_detector.py` using OpenCV Haar Cascades and skin color detection (YCrCb color space) to avoid MediaPipe Python 3.13 compatibility issues.
+- ✅ Integrated gesture detection into `app.py` with `--enable-gestures` flag and configurable weights (`--emotion-weight`, `--gesture-weight`).
+- ✅ Supports three gesture types: `hands_up`, `temple_tap`, and `thinking` based on spatial heuristics.
+- ✅ Created `test_gestures.py` for standalone gesture detection testing with visual feedback.
+- ✅ Updated matching algorithm to use weighted scoring: 0.7 emotion + 0.25 gesture + 0.05 reserved for future CLIP.
+- ✅ Gesture tags are loaded from `memes_index.json` (via manual tagging or directory inference).
+- 🔄 Future enhancement: Upgrade to MediaPipe Holistic when Python 3.12 environment is available for more accurate pose/hand tracking.
 
 ## Phase 5: Polishing for Content
 

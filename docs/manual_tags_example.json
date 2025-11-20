@@ -1,0 +1,27 @@
+{
+  "thinking_monkey.png": {
+    "tags": ["thinking", "contemplative", "classic"],
+    "gesture_tags": ["thinking"],
+    "notes": "Use when the user looks contemplative with hand near chin."
+  },
+  "roll_safe.jpg": {
+    "tags": ["smart", "confident", "meme"],
+    "gesture_tags": ["temple_tap"],
+    "notes": "The classic 'Roll Safe' meme with finger pointing at temple."
+  },
+  "absolute_cinema.png": {
+    "tags": ["awe", "masterpiece", "epic"],
+    "gesture_tags": ["hands_up"],
+    "notes": "Hands raised in appreciation of greatness."
+  },
+  "fry_not_sure.jpg": {
+    "tags": ["skeptical", "suspicious", "squinting"],
+    "gesture_tags": ["neutral"],
+    "notes": "Futurama Fry squinting - no specific hand gesture."
+  },
+  "monkey_idea.png": {
+    "tags": ["excited", "eureka", "idea"],
+    "gesture_tags": ["hands_up"],
+    "notes": "Excited monkey with hand raised - eureka moment."
+  }
+}
